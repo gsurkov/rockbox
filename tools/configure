@@ -1718,7 +1718,7 @@ cat <<EOF
                                                  213) MA8C
  ==Sony==                  ==Application==
  219) NWZ-E350 series      200) SDL (Generic)    ==IHIFI==
- 220) NWZ-E370/E380 series 201) Andorid (ARM)    230) 760
+ 220) NWZ-E370/E380 series 201) Android (ARM)    230) 760
  221) NWZ-E360 series      202) Android (MIPS)   231) 770
  222) NWZ-E450 series      203) Android (x86)    232) 770C
  223) NWZ-E460 series      209) Anbernic RG Nano 233) 800
@@ -1727,21 +1727,20 @@ cat <<EOF
  226) NWZ-A10 series       240) Rocker           ==AIGO==
  227) NW-A20 series                              245) Eros Q / K (hosted)
  228) NWZ-A860 series      ==iBasso==            247) Eros Q / K native
- 229) NWZ-S750 series      250) DX50                  (hw1/hw2 bl, all hw rb)
+ 229) NWZ-S750 series      250) DX50                   (hw1/hw2 bl, all hw rb)
                            251) DX90             248) Eros Q / K native
- ==FiiO==                                             (hw3 bl only)
+ ==FiiO==                                              (hw3 bl only)
  244) M3K Linux            ==xDuoo==             249) Eros Q / K native
- 246) M3K baremetal        241) X3                    (hw4 bl only)
+ 246) M3K baremetal        241) X3                     (hw4 bl only)
                            242) X3II
  ==Shanling==              243) X20              ==HiBy==
  260) Q1                                         300) R3 Pro II
-			   ==Surfans==           301) R1
+                           ==Surfans==           301) R1
  ==Echo project==          280) F28 (WIP)
  270) Echo R1 (WIP)                              ==Hidizs==
-						 302) AP80 Pro Max (WIP)
- ==Nintendo==
+                                                 302) AP80 Pro Max (WIP)
+ ==Nintendo==                                    400) AP80 Pro-X
  290) Nintendo 3DS (WIP)
-
 EOF
 
   buildfor=`input`;
@@ -4278,6 +4277,23 @@ fi
     sysfont="20-Terminus"
     ;;
 
+    400|hidizsap80prox)
+    target_id=126
+    application=yes
+    app_type="hidizs"
+    modelname="hidizsap80prox"
+    target="HIDIZS_AP80PROX"
+    memory=16
+    output="rockbox.ap80prox"
+    bootoutput="bootloader.ap80prox"
+    appextra="recorder:gui:hosted"
+    plugins="yes"
+    t_cpu="hosted"
+    t_manufacturer="hidizs"
+    t_model="ap80prox"
+    sysfontbl="24-Terminus"
+    sysfont="20-Terminus"
+    ;;
 
    *)
     echo "Please select a supported target platform!"

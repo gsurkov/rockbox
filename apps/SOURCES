@@ -306,4 +306,6 @@ keymaps/keymap-3ds.c
 keymaps/keymap-hibyr3proii.c
 #elif CONFIG_KEYPAD == HIDIZS_AP80MAX_PAD
 keymaps/keymap-hidizsap80max.c
+#elif CONFIG_KEYPAD == HIDIZS_AP80PROX_PAD
+keymaps/keymap-hidizsap80prox.c
 #endif
