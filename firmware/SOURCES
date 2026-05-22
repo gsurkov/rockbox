@@ -283,6 +283,23 @@ target/hosted/anbernic/button-rgnano.c
 target/hosted/anbernic/powermgmt-rgnano.c
 #endif /* RG_NANO */
 
+#if defined(HIDIZS_AP80PROX) && !defined(SIMULATOR)
+drivers/lcd-memframe.c
+target/hosted/backlight-unix.c
+target/hosted/backtrace-glibc.c
+target/hosted/button-devinput.c
+target/hosted/filesystem-unix.c
+target/hosted/kernel-unix.c
+target/hosted/lc-unix.c
+target/hosted/pcm-alsa.c
+target/hosted/sysfs.c
+target/hosted/system-hosted.c
+target/hosted/hidizs/ap80prox/ap80prox-button.c
+target/hosted/hidizs/ap80prox/ap80prox-codec.c
+target/hosted/hidizs/ap80prox/ap80prox-lcd.c
+target/hosted/hidizs/ap80prox/ap80prox-usb.c
+#endif /* HIDIZS_AP80PROX */
+
 /* Common */
 #ifndef BOOTLOADER
 chunk_alloc.c

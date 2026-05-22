@@ -1,0 +1,43 @@
+/*
+ * Hidizs AP80 Pro-X configuration file.
+ */
+
+#define MODEL_NUMBER 125
+#define MODEL_NAME   "Hidizs AP80 Pro-X"
+
+#define CONFIG_RTC      (RTC_HOSTED)
+#define CONFIG_LCD      (LCD_INGENIC_LINUX)
+#define CONFIG_KEYPAD   (HIDIZS_AP80PROX_PAD)
+#define CONFIG_STORAGE  (STORAGE_HOSTFS|STORAGE_USB)
+#define CONFIG_PLATFORM (PLATFORM_HOSTED)
+
+#define HAVE_FPU
+#define HAVE_LCD_COLOR
+#define HAVE_BACKLIGHT
+#define HAVE_BACKLIGHT_BRIGHTNESS
+#define HAVE_BUTTON_DATA
+#define HAVE_TOUCHSCREEN
+#define HAVE_TAGCACHE
+#define HAVE_ALBUMART
+#define HAVE_BMP_SCALING
+#define HAVE_JPEG
+#define HAVE_HIDIZS_LINUX_CODEC
+
+#define LCD_WIDTH       360
+#define LCD_HEIGHT      480
+#define LCD_DEPTH       24
+#define LCD_DPI         250
+#define LCD_PIXELFORMAT XRGB8888
+
+#define CPU_FREQ   1008000000
+
+#define CODEC_SIZE         0x100000
+#define PLUGIN_BUFFER_SIZE 0x80000
+
+#define PIVOT_ROOT     "/mnt/sd_0"
+#define MULTIDRIVE_DIR "/mnt/usb"
+#define NUM_DRIVES     2
+
+#define MIN_BRIGHTNESS_SETTING     1
+#define MAX_BRIGHTNESS_SETTING     255
+#define DEFAULT_BRIGHTNESS_SETTING 128
