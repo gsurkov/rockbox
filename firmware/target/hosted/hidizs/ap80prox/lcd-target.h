@@ -7,6 +7,7 @@
 #include "lcd.h"
 
 extern fb_data *framebuffer;
-#define LCD_FRAMEBUF_ADDR(col, row) (framebuffer + (row)*LCD_WIDTH + (col))
+
+#define LCD_FRAMEBUF_ADDR(col, row) NULL /* Does nothing */
 
 #endif /* __LCD_TARGET_H__ */
