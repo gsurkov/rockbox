@@ -25,7 +25,7 @@
 
 #define LCD_WIDTH       360
 #define LCD_HEIGHT      480
-#define LCD_DEPTH       24
+#define LCD_DEPTH       32
 #define LCD_DPI         250
 #define LCD_PIXELFORMAT XRGB8888
 
