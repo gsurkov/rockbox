@@ -158,6 +158,7 @@
 #define N3DS_PAD           78
 #define HIBY_R3PROII_PAD   79
 #define HIDIZS_AP80MAX_PAD 80
+#define HIDIZS_AP80PROX_PAD 81
 
 /* CONFIG_REMOTE_KEYPAD */
 #define H100_REMOTE   1
@@ -583,6 +584,8 @@ Lyre prototype 1 */
 #include "config/hibyr1.h"
 #elif defined(HIDIZS_AP80MAX)
 #include "config/hidizsap80max.h"
+#elif defined(HIDIZS_AP80PROX)
+#include "config/hidizsap80prox.h"
 #else
 #error "unknown hardware platform!"
 #endif

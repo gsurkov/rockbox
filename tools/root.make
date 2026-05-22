@@ -180,6 +180,10 @@ else # core
     include $(ROOTDIR)/packaging/3ds/3ds.make
   endif
 
+  ifneq (,$(findstring hidizs,$(APP_TYPE)))
+    include $(ROOTDIR)/firmware/target/hosted/hidizs/hidizs.make
+  endif
+
 endif # bootloader
 
 # Include makefile for flashing/debugging with OpenOCD & GDB

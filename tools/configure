@@ -1739,7 +1739,7 @@ cat <<EOF
  270) Echo R1 (WIP)        280) F28 (WIP)
                                                  ==Hidizs==
  ==Nintendo==                                    302) AP80 Pro Max (WIP)
- 290) Nintendo 3DS (WIP)
+ 290) Nintendo 3DS (WIP)                         400) AP80 Pro-X
 
 EOF
 
@@ -4256,6 +4256,23 @@ fi
     sysfont="20-Terminus"
     ;;
 
+    400|hidizsap80prox)
+    target_id=126
+    application=yes
+    app_type="hidizs"
+    modelname="hidizsap80prox"
+    target="HIDIZS_AP80PROX"
+    memory=16
+    output="rockbox.ap80prox"
+    bootoutput="bootloader.ap80prox"
+    appextra="recorder:gui:hosted"
+    plugins="yes"
+    t_cpu="hosted"
+    t_manufacturer="hidizs"
+    t_model="ap80prox"
+    sysfontbl="24-Terminus"
+    sysfont="20-Terminus"
+    ;;
 
    *)
     echo "Please select a supported target platform!"
