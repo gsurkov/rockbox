@@ -1,7 +1,6 @@
 #include "lcd-target.h"
 
 #include <fcntl.h>
-#include <stdio.h>
 #include <string.h>
 
 #include <linux/fb.h>
@@ -10,40 +9,52 @@
 #include <sys/mman.h>
 
 #include "panic.h"
+#include "debug.h"
 
 static int fd = -1;
+static int fb_plane = 0;
+
 static struct fb_var_screeninfo vinfo;
 static struct fb_fix_screeninfo finfo;
 
 fb_data *framebuffer = NULL;
+fb_data *fb_planes[2];
 
 #define FBDEV_PATH "/dev/fb0"
 
+/* Undocumented jz-fb ioctls, discovered via strace */
+#define JZFBIO_SWAP (_IOW('F', 0x60, __u32))
+#define JZFBIO_SYNC (_IOW('F', 0x61, __u32))
+
+/*
+ * Despite the display reporting the right (360x480) resolution, the display
+ * is actually a 480x360 one rotated 90 degrees clockwise.
+ *
+ * Its address space therefore starts at (360, 0) and is not contigious.
+ *
+ * Using a standard copy_buffer_rect() function would result in a completely garbled image,
+ * hence this function that replaces columns with rows on a pixel-by-pixel basis.
+ *
+ * NOTE: At the time of writing, the author is not aware of any way of doing this in hardware.
+ */
 static FORCE_INLINE void set_pixel(fb_data* dst, int x, int y, fb_data data) {
     dst[(LCD_WIDTH - x) * LCD_HEIGHT + y] = data;
 }
 
 static void lcd_full_update(void)
 {
-    int buf_idx = 0;
-    int status = -1;
-
-    status = ioctl(fd, _IOW('F', 0x60, int), &buf_idx);
-    if(status < 0) {
-        panicf("Failed to swap buffers");
-    }
-
-    fb_data* dst = framebuffer + ((finfo.smem_len / (2 * sizeof(fb_data))) * buf_idx);
-
     for(int y = 0; y < LCD_HEIGHT; ++y) {
         for(int x = 0; x < LCD_WIDTH; ++x) {
-            set_pixel(dst, x, y, *FBADDR(x, y));
+            set_pixel(fb_planes[fb_plane], x, y, *FBADDR(x, y));
         }
     }
 
-    status = ioctl(fd, _IOW('F', 0x61, int), 0);
-    if(status < 0) {
-        panicf("Failed to wait for vblank");
+    if(ioctl(fd, JZFBIO_SWAP, &fb_plane) < 0) {
+        panicf("Failed to swap buffers");
+    }
+
+    if(ioctl(fd, JZFBIO_SYNC, NULL) < 0) {
+        DEBUGF("Failed to wait for vblank\n");
     }
 }
 
@@ -79,26 +90,18 @@ void lcd_init_device(void)
     }
 
     memset(framebuffer, 0, finfo.smem_len);
+
+    fb_planes[0] = framebuffer;
+    fb_planes[1] = framebuffer + (finfo.smem_len / (FB_DATA_SZ * 2));
 }
 
 void lcd_update(void)
 {
-    if(fd < 0)
-    {
-        return;
-    }
-
     lcd_full_update();
 }
 
 void lcd_update_rect(int x, int y, int width, int height)
 {
-    if(fd < 0)
-    {
-        return;
-    }
-
-    printf("%s: x=%d y=%d w=%d h=%d\r\n", __FUNCTION__, x, y, width, height);
     // TODO: Implement partial update
     lcd_full_update();
 }
