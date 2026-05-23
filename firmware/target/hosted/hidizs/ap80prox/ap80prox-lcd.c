@@ -41,10 +41,9 @@ static FORCE_INLINE void set_pixel(fb_data* dst, int x, int y, fb_data data) {
     dst[(LCD_WIDTH - x) * LCD_HEIGHT + y] = data;
 }
 
-static void lcd_full_update(void)
-{
-    for(int y = 0; y < LCD_HEIGHT; ++y) {
-        for(int x = 0; x < LCD_WIDTH; ++x) {
+static void lcd_draw(int sx, int sy, int width, int height) {
+    for(int y = sy; y < sy + height; ++y) {
+        for(int x = sx; x < sx + width; ++x) {
             set_pixel(fb_planes[fb_plane], x, y, *FBADDR(x, y));
         }
     }
@@ -97,11 +96,10 @@ void lcd_init_device(void)
 
 void lcd_update(void)
 {
-    lcd_full_update();
+    lcd_draw(0, 0, LCD_WIDTH, LCD_HEIGHT);
 }
 
 void lcd_update_rect(int x, int y, int width, int height)
 {
-    // TODO: Implement partial update
-    lcd_full_update();
+    lcd_draw(x, y, width, height);
 }
