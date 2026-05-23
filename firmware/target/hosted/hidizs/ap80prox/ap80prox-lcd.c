@@ -11,6 +11,12 @@
 #include "panic.h"
 #include "debug.h"
 
+#define FBDEV_PATH "/dev/fb0"
+
+/* Undocumented jz-fb ioctls, discovered via strace */
+#define JZFBIO_SWAP (_IOW('F', 0x60, __u32))
+#define JZFBIO_SYNC (_IOW('F', 0x61, __u32))
+
 static int fd = -1;
 static int fb_plane = 0;
 
@@ -19,12 +25,6 @@ static struct fb_fix_screeninfo finfo;
 
 fb_data *framebuffer = NULL;
 fb_data *fb_planes[2];
-
-#define FBDEV_PATH "/dev/fb0"
-
-/* Undocumented jz-fb ioctls, discovered via strace */
-#define JZFBIO_SWAP (_IOW('F', 0x60, __u32))
-#define JZFBIO_SYNC (_IOW('F', 0x61, __u32))
 
 /*
  * Despite the display reporting the right (360x480) resolution, the display
