@@ -44,7 +44,8 @@ static FORCE_INLINE void set_pixel(fb_data* dst, int x, int y, fb_data data) {
 static void lcd_draw(int sx, int sy, int width, int height) {
     for(int y = sy; y < sy + height; ++y) {
         for(int x = sx; x < sx + width; ++x) {
-            set_pixel(fb_planes[fb_plane], x, y, *FBADDR(x, y));
+            // TODO: Figure out why switching to plane 1 causes segfaults
+            set_pixel(fb_planes[0], x, y, *FBADDR(x, y));
         }
     }
 
