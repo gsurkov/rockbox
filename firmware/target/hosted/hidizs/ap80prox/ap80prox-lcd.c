@@ -38,23 +38,22 @@ fb_data *fb_planes[2];
  * NOTE: At the time of writing, the author is not aware of any way of doing this in hardware.
  */
 static FORCE_INLINE void set_pixel(fb_data* dst, int x, int y, fb_data data) {
-    dst[(LCD_WIDTH - x) * LCD_HEIGHT + y] = data;
+    dst[(LCD_WIDTH - x - 1) * LCD_HEIGHT + y] = data;
 }
 
 static void lcd_draw(int sx, int sy, int width, int height) {
-    for(int y = sy; y < sy + height; ++y) {
-        for(int x = sx; x < sx + width; ++x) {
-            // TODO: Figure out why switching to plane 1 causes segfaults
-            set_pixel(fb_planes[0], x, y, *FBADDR(x, y));
-        }
-    }
-
     if(ioctl(fd, JZFBIO_SWAP, &fb_plane) < 0) {
         panicf("Failed to swap buffers");
     }
 
+    for(int y = sy; y < sy + height; ++y) {
+        for(int x = sx; x < sx + width; ++x) {
+            set_pixel(fb_planes[fb_plane], x, y, *FBADDR(x, y));
+        }
+    }
+
     if(ioctl(fd, JZFBIO_SYNC, NULL) < 0) {
-        DEBUGF("Failed to wait for vblank\n");
+        panicf("Failed to sync buffer");
     }
 }
 
@@ -92,7 +91,7 @@ void lcd_init_device(void)
     memset(framebuffer, 0, finfo.smem_len);
 
     fb_planes[0] = framebuffer;
-    fb_planes[1] = framebuffer + (finfo.smem_len / (FB_DATA_SZ * 2));
+    fb_planes[1] = framebuffer + (finfo.smem_len / (2 * FB_DATA_SZ));
 }
 
 void lcd_update(void)
