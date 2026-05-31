@@ -12,8 +12,15 @@
 
 #define HW_VOLUME_MAX (255)
 
-static int cb_to_volume(int cb) {
-    return cb / (VOLUME_MIN_CB / HW_VOLUME_MAX);
+/*
+ * NOTE: Hidizs AP80 ALSA card (quite counter-intuitively)
+ * treats 0 as the maximum volume and 255 as the minium volume.
+ *
+ * Thus, VOLUME_MIN_CB was chosen so that
+ * it would be evenly divisible by HW_VOLUME_MAX.
+ */
+static int centibel_to_hw_volume(int vol_cb) {
+    return vol_cb / (VOLUME_MIN_CB / HW_VOLUME_MAX);
 }
 
 void audiohw_preinit(void)
@@ -33,14 +40,10 @@ void audiohw_close(void)
     alsa_controls_close();
 }
 
-void audiohw_mute(int mute) {
-    alsa_controls_set_bool(CONTROL_MUTE, !!mute);
-}
-
 void audiohw_set_volume(int vol_l, int vol_r)
 {
-    long l = cb_to_volume(vol_l);
-    long r = cb_to_volume(vol_r);
+    long l = centibel_to_hw_volume(vol_l);
+    long r = centibel_to_hw_volume(vol_r);
 
     alsa_controls_set_ints(CONTROL_LEFT, 1, &l);
     alsa_controls_set_ints(CONTROL_RIGHT, 1, &r);

@@ -26,8 +26,4 @@ AUDIOHW_SETTING(\
     VOLUME_MAX_CB, \
     VOLUME_DEFAULT_CB)
 
-#define AUDIOHW_NEEDS_INITIAL_UNMUTE
-
-void audiohw_mute(int mute);
-
 #endif /* _HIDIZS_LINUX_CODEC_ */
