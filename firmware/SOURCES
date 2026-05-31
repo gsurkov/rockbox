@@ -285,6 +285,7 @@ target/hosted/anbernic/powermgmt-rgnano.c
 
 #if defined(HIDIZS_AP80PROX) && !defined(SIMULATOR)
 drivers/lcd-memframe.c
+target/hosted/alsa-controls.c
 target/hosted/backlight-unix.c
 target/hosted/backtrace-glibc.c
 target/hosted/button-devinput.c
