@@ -311,11 +311,11 @@ target/hosted/pcm-alsa.c
 target/hosted/power-linux.c
 target/hosted/sysfs.c
 target/hosted/system-hosted.c
-target/hosted/hidizs/ap80prox/ap80prox-button.c
-target/hosted/hidizs/ap80prox/ap80prox-codec.c
-target/hosted/hidizs/ap80prox/ap80prox-lcd.c
-target/hosted/hidizs/ap80prox/ap80prox-powermgmt.c
-target/hosted/hidizs/ap80prox/ap80prox-usb.c
+target/hosted/hidizs/ap80prox/button-ap80prox.c
+target/hosted/hidizs/ap80prox/codec-ap80prox.c
+target/hosted/hidizs/ap80prox/lcd-ap80prox.c
+target/hosted/hidizs/ap80prox/powermgmt-ap80prox.c
+target/hosted/hidizs/ap80prox/usb-ap80prox.c
 #endif /* HIDIZS_AP80PROX */
 
 /* Common */
