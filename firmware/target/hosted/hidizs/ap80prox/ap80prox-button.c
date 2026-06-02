@@ -7,9 +7,9 @@ int button_map(int keycode)
 {
     switch(keycode) {
     case KEY_LEFT:
-        return BUTTON_VOL_DOWN;
+        return BUTTON_SCROLL_BACK;
     case KEY_RIGHT:
-        return BUTTON_VOL_UP;
+        return BUTTON_SCROLL_FWD;
     case KEY_PLAYPAUSE:
         return BUTTON_PLAY;
     case KEY_NEXTSONG:

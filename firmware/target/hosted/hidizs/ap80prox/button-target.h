@@ -1,18 +1,18 @@
 #ifndef _BUTTON_TARGET_H_
 #define _BUTTON_TARGET_H_
 
-#define BUTTON_POWER    (1 << 0)
-#define BUTTON_PREV     (1 << 1)
-#define BUTTON_NEXT     (1 << 2)
-#define BUTTON_PLAY     (1 << 3)
-#define BUTTON_VOL_UP   (1 << 4)
-#define BUTTON_VOL_DOWN (1 << 5)
-#define BUTTON_TOUCH    (1 << 6)
+#define BUTTON_POWER       (1 << 0)
+#define BUTTON_PREV        (1 << 1)
+#define BUTTON_NEXT        (1 << 2)
+#define BUTTON_PLAY        (1 << 3)
+#define BUTTON_SCROLL_FWD  (1 << 4)
+#define BUTTON_SCROLL_BACK (1 << 5)
+#define BUTTON_TOUCH       (1 << 6)
 
 #define BUTTON_MAIN (\
-    BUTTON_POWER  | BUTTON_PREV \
-    BUTTON_NEXT   | BUTTON_PLAY \
-    BUTTON_VOL_UP | BUTTON_VOL_DOWN)
+    BUTTON_POWER      | BUTTON_PREV \
+    BUTTON_NEXT       | BUTTON_PLAY \
+    BUTTON_SCROLL_FWD | BUTTON_SCROLL_BACK)
 
 #define BUTTON_TOPLEFT      (1 << 12)
 #define BUTTON_TOPMIDDLE    (1 << 13)
