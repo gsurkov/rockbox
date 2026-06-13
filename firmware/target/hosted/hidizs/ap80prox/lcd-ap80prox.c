@@ -2,6 +2,7 @@
 
 #include <fcntl.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <linux/fb.h>
 
@@ -9,13 +10,13 @@
 #include <sys/mman.h>
 
 #include "panic.h"
-#include "debug.h"
 
 #define FBDEV_PATH "/dev/fb0"
 
-/* Undocumented jz-fb ioctls, discovered via strace */
-#define JZFBIO_SWAP (_IOW('F', 0x60, __u32))
-#define JZFBIO_SYNC (_IOW('F', 0x61, __u32))
+/* Undocumented jz-fb ioctls */
+#define JZFBIO_SWAP  (_IOW('F', 0x60, __u32))
+#define JZFBIO_SYNC  (_IOW('F', 0x61, __u32))
+#define JZFBIO_SLEEP (_IOW('F', 0x62, __u32))
 
 static int fd = -1;
 static int fb_plane = 0;
@@ -25,6 +26,8 @@ static struct fb_fix_screeninfo finfo;
 
 fb_data *framebuffer = NULL;
 fb_data *fb_planes[2];
+
+void lcd_set_active(bool active);
 
 /*
  * Despite the display reporting the right (360x480) resolution, the display
@@ -57,8 +60,18 @@ static void lcd_draw(int sx, int sy, int width, int height) {
     }
 }
 
+static bool lcd_initialized(void)
+{
+    return (fd >= 0);
+}
+
 void lcd_init_device(void)
 {
+    if(lcd_initialized())
+    {
+        return;
+    }
+
     fd = open(FBDEV_PATH, O_RDWR | O_CLOEXEC);
 
     if(fd < 0)
@@ -92,14 +105,75 @@ void lcd_init_device(void)
 
     fb_planes[0] = framebuffer;
     fb_planes[1] = framebuffer + (finfo.smem_len / (2 * FB_DATA_SZ));
+
+    lcd_set_active(true);
+}
+
+void lcd_shutdown(void)
+{
+    if(!lcd_initialized())
+    {
+        return;
+    }
+
+    munmap(framebuffer, FRAMEBUFFER_SIZE);
+    memset(fb_planes, 0, sizeof(fb_planes));
+    framebuffer = NULL;
+    close(fd);
+    fd = -1;
+}
+
+void lcd_enable(bool on) {
+    if(!lcd_initialized() || lcd_active() == on)
+    {
+        return;
+    }
+
+    lcd_set_active(on);
+
+    int sleep;
+
+    if(on)
+    {
+        send_event(LCD_EVENT_ACTIVATION, NULL);
+        sleep = 0;
+    }
+    else
+    {
+        memset(framebuffer, 0, finfo.smem_len);
+        sleep = 1;
+    }
+
+    if(ioctl(fd, JZFBIO_SLEEP, &sleep) < 0)
+    {
+        panicf("Failed to set display sleep");
+    }
+
+    if(on)
+    {
+        if(ioctl(fd, FBIOPAN_DISPLAY, &vinfo) < 0)
+        {
+            panicf("Failed to pan display");
+        }
+    }
 }
 
 void lcd_update(void)
 {
+    if(!lcd_initialized() || !lcd_active())
+    {
+        return;
+    }
+
     lcd_draw(0, 0, LCD_WIDTH, LCD_HEIGHT);
 }
 
 void lcd_update_rect(int x, int y, int width, int height)
 {
+    if(!lcd_initialized() || !lcd_active())
+    {
+        return;
+    }
+
     lcd_draw(x, y, width, height);
 }
