@@ -40,22 +40,28 @@ void lcd_set_active(bool active);
  *
  * NOTE: At the time of writing, the author is not aware of any way of doing this in hardware.
  */
-static FORCE_INLINE void set_pixel(fb_data* dst, int x, int y, fb_data data) {
+static FORCE_INLINE void set_pixel(fb_data* dst, int x, int y, fb_data data)
+{
     dst[(LCD_WIDTH - x - 1) * LCD_HEIGHT + y] = data;
 }
 
-static void lcd_draw(int sx, int sy, int width, int height) {
-    if(ioctl(fd, JZFBIO_SWAP, &fb_plane) < 0) {
+static void lcd_draw(int sx, int sy, int width, int height)
+{
+    if(ioctl(fd, JZFBIO_SWAP, &fb_plane) < 0)
+    {
         panicf("Failed to swap buffers");
     }
 
-    for(int y = sy; y < sy + height; ++y) {
-        for(int x = sx; x < sx + width; ++x) {
+    for(int y = sy; y < sy + height; ++y)
+    {
+        for(int x = sx; x < sx + width; ++x)
+        {
             set_pixel(fb_planes[fb_plane], x, y, *FBADDR(x, y));
         }
     }
 
-    if(ioctl(fd, JZFBIO_SYNC, NULL) < 0) {
+    if(ioctl(fd, JZFBIO_SYNC, NULL) < 0)
+    {
         panicf("Failed to sync buffer");
     }
 }
