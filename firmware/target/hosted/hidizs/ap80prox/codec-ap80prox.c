@@ -1,14 +1,13 @@
 #include "audiohw.h"
 #include "alsa-controls.h"
 
-#include "debug.h"
-
 #define CONTROL_DEFAULT "default"
 
-#define CONTROL_LEFT  "Left Playback Volume"
-#define CONTROL_RIGHT "Right Playback Volume"
-#define CONTROL_PORT  "Output Port Switch"
-#define CONTROL_MUTE  "Hardware Mute"
+#define CONTROL_LEFT   "Left Playback Volume"
+#define CONTROL_RIGHT  "Right Playback Volume"
+#define CONTROL_PORT   "Output Port Switch"
+#define CONTROL_MUTE   "Hardware Mute"
+#define CONTROL_FILTER "Digital Filter"
 
 #define HW_VOLUME_MAX (255)
 
@@ -47,4 +46,10 @@ void audiohw_set_volume(int vol_l, int vol_r)
 
     alsa_controls_set_ints(CONTROL_LEFT, 1, &l);
     alsa_controls_set_ints(CONTROL_RIGHT, 1, &r);
+}
+
+void audiohw_set_filter_roll_off(int value)
+{
+    long value_hw = value;
+    alsa_controls_set_ints(CONTROL_FILTER, 1, &value_hw);
 }
