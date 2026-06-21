@@ -18,6 +18,13 @@
 #define JZFBIO_SYNC  (_IOW('F', 0x61, __u32))
 #define JZFBIO_SLEEP (_IOW('F', 0x62, __u32))
 
+#define LCDADDR(x, y) (fb_planes[fb_plane] + (LCD_WIDTH - (x) - 1) * LCD_HEIGHT + (y))
+
+/* Offset 1 pixel back for the s32ldi instruction */
+#define S32LDI_OFFSET (-1)
+/* Offset 1 column forward for the s32sdi instruction */
+#define S32SDI_OFFSET (LCD_HEIGHT)
+
 static int fd = -1;
 static int fb_plane = 0;
 
@@ -30,6 +37,24 @@ fb_data *fb_planes[2];
 void lcd_set_active(bool active);
 
 /*
+ * Enable proprietary Ingenic extension module (MXU).
+ *
+ * NOTE: This function uses proprietary Ingenic instructions encoded as raw bytes using .word directive.
+ * See https://opennoah.github.io/datasheet/X1000_M200_XBurst_ISA_MXU_PM.pdf for details.
+ */
+static void mxu_enable(void) {
+    __asm__ __volatile__(
+        ".word 0x7008042e \n" // s32m2i $xr16, $t0
+        "ori   $t0, $t0, 1\n"
+        ".word 0x7008042f \n" // s32i2m $xr16, $t0
+        "nop\n"
+        "nop\n"
+        "nop\n"
+        ::: "t0"
+    );
+}
+
+/*
  * Despite the display reporting the right (360x480) resolution, the display
  * is actually a 480x360 one rotated 90 degrees clockwise.
  *
@@ -37,27 +62,33 @@ void lcd_set_active(bool active);
  *
  * Using a standard copy_buffer_rect() function would result in a completely garbled image,
  * hence this function that replaces columns with rows on a pixel-by-pixel basis.
- *
- * NOTE: At the time of writing, the author is not aware of any way of doing this in hardware.
  */
-static FORCE_INLINE void set_pixel(fb_data* dst, int x, int y, fb_data data)
-{
-    dst[(LCD_WIDTH - x - 1) * LCD_HEIGHT + y] = data;
-}
-
-static void lcd_draw(int sx, int sy, int width, int height)
+static void lcd_draw(int x, int y, int width, int height)
 {
     if(ioctl(fd, JZFBIO_SWAP, &fb_plane) < 0)
     {
         panicf("Failed to swap buffers");
     }
 
-    for(int y = sy; y < sy + height; ++y)
+    const fb_data* src = FBADDR(x, y) + S32LDI_OFFSET;
+    fb_data* dst = LCDADDR(x, y) + S32SDI_OFFSET;
+
+    for(int h = 0; h < height; ++h)
     {
-        for(int x = sx; x < sx + width; ++x)
+        register const fb_data* s __asm__("s0") = src;
+        register fb_data* d __asm__("s1") = dst;
+
+        for(int w = 0; w < width; ++w)
         {
-            set_pixel(fb_planes[fb_plane], x, y, *FBADDR(x, y));
+            __asm__ __volatile__(
+                ".word 0x72000454\n" // s32ldi $xr1, $s0, 4
+                ".word 0x72288055\n" // s32sdi $xr1, $s1, -LCD_HEIGHT*4
+                ::"r"(s), "r"(d):
+            );
         }
+
+        src += LCD_WIDTH;
+        dst += 1;
     }
 
     if(ioctl(fd, JZFBIO_SYNC, NULL) < 0)
@@ -111,6 +142,8 @@ void lcd_init_device(void)
 
     fb_planes[0] = framebuffer;
     fb_planes[1] = framebuffer + (finfo.smem_len / (2 * FB_DATA_SZ));
+
+    mxu_enable();
 
     lcd_set_active(true);
 }
